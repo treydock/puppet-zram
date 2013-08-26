@@ -1,0 +1,40 @@
+#!/bin/sh
+
+RETVAL=0
+
+num_cpus=$(grep -c processor /proc/cpuinfo)
+[ "$num_cpus" != 0 ] || num_cpus=1
+
+[ -f /etc/default/zram ] && source /etc/default/zram || true
+[ -z $FACTOR ] && factor=80 || factor=$FACTOR # percentage
+[ -z $NUM_DEVICES ] && num_devices=$num_cpus || num_devices=$NUM_DEVICES
+[ -z $SWAP ] && swap=1 || swap=$SWAP
+[ -z $ZFS ] && zfs=0 || zfs=$ZFS
+[ -z $ZPOOL_NAME ] && zpool_name='tank' || zpool_name=$ZPOOL_NAME
+
+memtotal=$(grep MemTotal /proc/meminfo | awk ' { print $2 } ')
+mem_by_cpu=$(($memtotal/$num_devices*$factor/100*1024))
+
+modprobe -q zram num_devices=$num_devices
+RETVAL=$?
+[ $RETVAL -ne 0 ] && exit $RETVAL
+
+for zram in /dev/zram*; do
+  z=$(basename $zram)
+	echo $mem_by_cpu > /sys/block/$z/disksize
+  RETVAL=$?
+
+  if [ "$SWAP" == 1 ]; then
+	  mkswap $zram
+    RETVAL=$?
+	  swapon -p 100 $zram
+    RETVAL=$?
+  fi
+
+  if [ "$ZFS" == 1 ]; then
+    zpool add $zpool_name cache $z
+    RETVAL=$?
+  fi
+done
+
+exit $RETVAL

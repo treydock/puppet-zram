@@ -12,18 +12,6 @@ task :ci => [
   :spec,
 ]
 
-Rake::Task["spec:system"].clear
-
-desc 'Prep system tests'
-task :spec_system_prep do
-  Rake::Task["spec_prep"].invoke
-  Find.find('spec/fixtures/modules') do |path|
-    if File.symlink?(path)
-      FileUtils.safe_unlink(path, :verbose => true)
-    end
-  end
-end
-
 # Disable puppet-lint checks
 PuppetLint.configuration.send("disable_80chars")
 PuppetLint.configuration.send("disable_class_inherits_from_params_class")

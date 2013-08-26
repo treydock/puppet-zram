@@ -1,0 +1,30 @@
+#!/bin/sh
+
+RETVAL=0
+
+num_cpus=$(grep -c processor /proc/cpuinfo)
+[ "$num_cpus" != 0 ] || num_cpus=1
+
+[ -f /etc/default/zram ] && source /etc/default/zram || true
+[ -z $FACTOR ] && factor=80 || factor=$FACTOR # percentage
+[ -z $NUM_DEVICES ] && num_devices=$num_cpus || num_devices=$NUM_DEVICES
+[ -z $SWAP ] && swap=1 || swap=$SWAP
+[ -z $ZFS ] && zfs=0 || zfs=$ZFS
+[ -z $ZPOOL_NAME ] && zpool_name='tank' || zpool_name=$ZPOOL_NAME
+
+for zram in /dev/zram*; do
+  z=$(basename $zram)
+
+  grep -q "$zram" /proc/swaps && swapoff $zram
+  RETVAL=$?
+  
+  if [ "$ZFS" == 1 ]; then
+    zpool remove $zpool_name $z
+    RETVAL=$?
+  fi
+done
+
+sleep 1
+rmmod zram
+
+exit $RETVAL

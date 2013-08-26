@@ -1,0 +1,19 @@
+# The factor is how much (from 0 to 100, percentage)
+# of system RAM to allocate to ZRAM block devices
+# Too big, and your system will start killing off processes
+FACTOR=<%= @factor %>
+
+# The number of devices
+# to be created for zram
+NUM_DEVICES=<%= @num_devices %>
+
+# Should the zram devices be used
+# for swap space.
+SWAP=<%= @swap_real %>
+
+# Should the zram devices be used
+# with ZFS
+ZFS=<%= @zfs_real %>
+
+# Name of the ZFS pool using the zram devices
+ZPOOL_NAME=<%= @zpool_name %>
