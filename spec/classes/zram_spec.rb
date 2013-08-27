@@ -66,9 +66,9 @@ describe 'zram' do
     should contain_service('zram').with({
       'ensure'      => 'running',
       'enable'      => 'true',
-      'hasstatus'   => 'false',
+      'hasstatus'   => 'true',
       'hasrestart'  => 'true',
-      'status'      => 'lsmod | grep -q "^zram"',
+      'status'      => nil,
     })
   end
 

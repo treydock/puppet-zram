@@ -68,6 +68,21 @@ stop() {
 
 }
 
+status() {
+
+  lsmod | grep -q '^zram'
+  RETVAL=$?
+  
+  if [ $RETVAL -eq 0 ]; then
+    echo "zram module is loaded..."
+  else
+    echo "zram module is not loaded..."
+  fi
+  
+  [ -f /usr/sbin/zramstat ] && /usr/sbin/zramstat
+
+}
+
 case "$1" in
   start)
     start
@@ -80,8 +95,11 @@ case "$1" in
     sleep 3
     start
     ;;
+  status)
+    status
+    ;;
   *)
-	  echo "Usage: $0 {start|stop|restart}"
+	  echo "Usage: $0 {start|stop|restart|status}"
     RETVAL=1
 esac
 

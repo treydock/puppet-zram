@@ -27,9 +27,9 @@ class zram::params {
       $service_name       = 'zram'
       $service_ensure     = running
       $service_enable     = true
-      $service_hasstatus  = false
+      $service_hasstatus  = true
       $service_hasrestart = true
-      $service_status     = 'lsmod | grep -q "^zram"'
+      $service_status     = undef
     }
 
     default: {
