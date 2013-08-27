@@ -1,11 +1,11 @@
 name    'treydock-zram'
 version '0.0.1'
-source 'UNKNOWN'
+source 'git://github.com/treydock/puppet-zram.git'
 author 'treydock'
 license 'Apache License, Version 2.0'
-summary 'UNKNOWN'
-description 'UNKNOWN'
-project_page 'UNKNOWN'
+summary 'zram Puppet module'
+description 'zram Puppet module'
+project_page 'http://github.com/treydock/puppet-zram'
 
 ## Add dependencies, if any:
-dependency 'puppetlabs/stdlib', '>=3.2.0 <5.0.0'
+dependency 'puppetlabs/stdlib'
