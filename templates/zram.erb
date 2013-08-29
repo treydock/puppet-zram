@@ -3,6 +3,11 @@
 # Too big, and your system will start killing off processes
 FACTOR=<%= @factor %>
 
+# The size of each device in bytes.
+# This is an alternative to using the FACTOR option.
+# A value of 0 disables this option in favor of FACTOR.
+DEVICE_DISKSIZE=<%= @device_disksize_real %>
+
 # The number of devices
 # to be created for zram
 NUM_DEVICES=<%= @num_devices %>

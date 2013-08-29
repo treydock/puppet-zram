@@ -8,14 +8,20 @@
 #
 # === Copyright
 #
-# Copyright 2013 Trey Dockendorf
+# Copyright 2013 Trey Dockendorf# == Class: zram
 #
 class zram::params {
 
+  $service_autorestart  = true
+  $factor               = 50
+  $device_disksize      = 0
   $num_devices  = $::processorcount ? {
     undef   => 1,
     default => $::processorcount,
   }
+  $swap                 = true
+  $zfs                  = false
+  $zpool_name           = 'tank'
 
   case $::osfamily {
     'RedHat': {
@@ -27,9 +33,6 @@ class zram::params {
       $service_name       = 'zram'
       $service_ensure     = running
       $service_enable     = true
-      $service_hasstatus  = true
-      $service_hasrestart = true
-      $service_status     = undef
     }
 
     default: {

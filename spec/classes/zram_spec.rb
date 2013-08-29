@@ -20,15 +20,17 @@ describe 'zram' do
     })
   end
   
-  it do
-    should contain_file('/etc/default/zram') \
-      .with_content(/^FACTOR=50$/) \
-      .with_content(/^NUM_DEVICES=1$/) \
-      .with_content(/^SWAP=1$/) \
-      .with_content(/^ZFS=0$/) \
-      .with_content(/^ZPOOL_NAME=tank$/)
+  it 'should set /etc/default/zram values' do
+    verify_contents(subject, '/etc/default/zram', [
+      'FACTOR=50',
+      'DEVICE_DISKSIZE=0',
+      'NUM_DEVICES=1',
+      'SWAP=1',
+      'ZFS=0',
+      'ZPOOL_NAME=tank',
+    ])
   end
-  
+    
   it do
     should contain_file('/usr/sbin/zramstart').with({
       'ensure'  => 'present',
@@ -44,6 +46,17 @@ describe 'zram' do
     should contain_file('/usr/sbin/zramstop').with({
       'ensure'  => 'present',
       'source'  => 'puppet:///modules/zram/zramstop',
+      'owner'   => 'root',
+      'group'   => 'root',
+      'mode'    => '0755',
+      'before'  => 'File[/usr/sbin/zramstat]',
+    })
+  end
+
+  it do
+    should contain_file('/usr/sbin/zramstat').with({
+      'ensure'  => 'present',
+      'source'  => 'puppet:///modules/zram/zramstat',
       'owner'   => 'root',
       'group'   => 'root',
       'mode'    => '0755',
@@ -69,44 +82,61 @@ describe 'zram' do
       'hasstatus'   => 'true',
       'hasrestart'  => 'true',
       'status'      => nil,
-    })
-  end
-
-  it do
-    should contain_file('/usr/sbin/zramstat').with({
-      'ensure'  => 'present',
-      'source'  => 'puppet:///modules/zram/zramstat',
-      'owner'   => 'root',
-      'group'   => 'root',
-      'mode'    => '0755',
+      'restart'     => nil,
+      'subscribe'   => 'File[/etc/default/zram]',
     })
   end
 
   context 'with factor => 25' do
     let(:params) {{ :factor => 25 }}
     
-    it { should contain_file('/etc/default/zram').with_content(/^FACTOR=25$/) }
+    it 'should set FACTOR=25' do
+      verify_contents(subject, '/etc/default/zram', ['FACTOR=25'])
+    end
+  end
+
+  context 'with device_disksize => 1024' do
+    let(:params) {{ :device_disksize => 1024 }}
+    
+    it 'should set DEVICE_DISKSIZE=1024' do
+      verify_contents(subject, '/etc/default/zram', ['DEVICE_DISKSIZE=1024'])
+    end
+  end
+  
+  context 'with device_disksize => false' do
+    let(:params) {{ :device_disksize => false }}
+    
+    it 'should set DEVICE_DISKSIZE=0' do
+      verify_contents(subject, '/etc/default/zram', ['DEVICE_DISKSIZE=0'])
+    end
   end
   
   context 'with num_devices => 2' do
     let(:params) {{ :num_devices => 2 }}
     
-    it { should contain_file('/etc/default/zram').with_content(/^NUM_DEVICES=2$/) }
+    it 'should set NUM_DEVICES=25' do
+      verify_contents(subject, '/etc/default/zram', ['NUM_DEVICES=2'])
+    end
   end
 
   context 'with fact processorcount => 4' do
     let(:params) {{  }}
-    
     let(:facts) { default_facts.merge({ :processorcount => 4}) }
     
-    it { should contain_file('/etc/default/zram').with_content(/^NUM_DEVICES=4$/) }
+    it 'should set NUM_DEVICES=4' do
+      verify_contents(subject, '/etc/default/zram', ['NUM_DEVICES=4'])
+    end
   end
 
   context 'with swap => false and zfs => true' do
     let(:params) {{ :swap => false, :zfs => true }}
     
-    it { should contain_file('/etc/default/zram').with_content(/^SWAP=0$/) }
-    it { should contain_file('/etc/default/zram').with_content(/^ZFS=1$/) }
+    it 'should set SWAP=0 and ZFS=1' do
+      verify_contents(subject, '/etc/default/zram', [
+        'SWAP=0',
+        'ZFS=1',
+      ])
+    end
   end
   
   context 'with swap => true and zfs => true' do
@@ -117,6 +147,14 @@ describe 'zram' do
   context 'with zpool_name => foo' do
     let(:params) {{ :zpool_name => 'foo' }}
     
-    it { should contain_file('/etc/default/zram').with_content(/^ZPOOL_NAME=foo$/) }
+    it 'should set ZPOOL_NAME=25' do
+      verify_contents(subject, '/etc/default/zram', ['ZPOOL_NAME=foo'])
+    end
+  end
+  
+  context 'with service_autorestart => false' do
+    let(:params) {{ :service_autorestart => false }}
+    
+    it { should contain_service('zram').with_subscribe(nil) }
   end
 end
