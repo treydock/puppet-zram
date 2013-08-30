@@ -1,41 +1,51 @@
-# puppet-zram
+# puppet-zram [![Build Status](https://travis-ci.org/treydock/puppet-zram.png)](https://travis-ci.org/treydock/puppet-zram)
 
-UNKNOWN
+Puppet module to configure the zram Kernel module.
 
 ## Support
 
-Tested using
-* CentOS 5.9
-* CentOS 6.4
+* RedHat based distributions
 
-## Usage
+Tested using CentOS 6.4 and Scientific Linux 6.4
+
+## Reference
+
+### Class: zram
+
+Default module configuration.  Creates one zram device per CPU for swap, using 50% of the host's RAM.
+
+    class { 'zram': }
+
+This is an example of using this module for ZFS L2ARC caching
+
+    class { 'zram':
+      swap        => false,
+      zfs         => true,
+      zpool_name  => 'tank',
+    }
 
 ## Development
 
-### Dependencies
+### Testing
 
-* Ruby 1.8.7
-* Bundler
-* Vagrant >= 1.2.0
+Testing requires the following dependencies:
 
-### Unit testing
+* rake
+* bundler
 
-1. To install dependencies run `bundle install`
-2. Run tests using `bundle exec rake ci`
+Install gem dependencies
 
-### Vagrant system tests
+    bundle install
 
-1. Have Vagrant >= 1.2.0 installed
-2. Run tests using `bundle exec rake spec:system`
+Run unit tests
 
-For active development the `RSPEC_DESTROY=no` environment variable can be passed to keep the Vagrant VM from being destroyed after a test run.
+    bundle exec rake ci
 
-    RSPEC_DESTROY=no bundle exec rake spec:system
+If you have Vagrant >= 1.2.0 installed you can run system tests
 
-To test on CentOS 5.9 run the following:
-
-    RSPEC_SET=centos-59-x64 bundle exec rake spec:system
+    bundle exec rake spec:system
 
 ## Further Information
 
-*
+* [FedoraZram](https://github.com/mystilleef/FedoraZram)
+* [RHEL6.3_ZRAM_SCRIPTS](https://github.com/michaelschapira/RHEL6.3_ZRAM_Scripts)
