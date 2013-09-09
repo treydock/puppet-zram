@@ -157,4 +157,16 @@ describe 'zram' do
     
     it { should contain_service('zram').with_subscribe(nil) }
   end
+
+  context 'with service_ensure => "stopped"' do
+    let(:params) {{ :service_ensure => 'stopped' }}
+    
+    it { should contain_service('zram').with_ensure('stopped') }
+  end
+
+  context 'with service_ensure => "undef"' do
+    let(:params) {{ :service_ensure => 'undef' }}
+    
+    it { should contain_service('zram').without_ensure }
+  end
 end

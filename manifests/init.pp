@@ -8,6 +8,10 @@
 #   Default: zram
 #
 # [*service_ensure*]
+#   String.  Sets the service ensure state.
+#   The string 'undef' can be used to not manage the service's
+#   ensure state.
+#   Valid values are 'running', 'stopped', or 'undef'
 #   Default: running
 #
 # [*service_enable*]
@@ -92,6 +96,14 @@ class zram (
   $zpool_name           = $zram::params::zpool_name
 ) inherits zram::params {
 
+  # This gives the option to not define the service 'ensure' value.
+  # Useful if manual intervention is required to allow zram
+  # to be started, such as configuring the zpool if using zfs
+  validate_re($service_ensure, '(running|stopped|undef)')
+  $service_ensure_real  = $service_ensure ? {
+    'undef'   => undef,
+    default   => $service_ensure,
+  }
 
   $service_autorestart_real = $service_autorestart ? {
     true  => File[$config_path],
@@ -155,7 +167,7 @@ class zram (
   }
 
   service { 'zram':
-    ensure      => $service_ensure,
+    ensure      => $service_ensure_real,
     enable      => $service_enable,
     name        => $service_name,
     hasstatus   => true,
