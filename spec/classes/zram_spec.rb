@@ -169,4 +169,28 @@ describe 'zram' do
     
     it { should contain_service('zram').without_ensure }
   end
+
+  context 'with service_enable => "true"' do
+    let(:params) {{ :service_enable => 'true' }}
+    
+    it { should contain_service('zram').with_enable('true') }
+  end
+
+  context 'with service_enable => "false"' do
+    let(:params) {{ :service_enable => 'false' }}
+    
+    it { should contain_service('zram').with_enable('false') }
+  end
+
+  context 'with service_enable => false' do
+    let(:params) {{ :service_enable => false }}
+    
+    it { should contain_service('zram').with_enable('false') }
+  end
+
+  context 'with service_enable => "undef"' do
+    let(:params) {{ :service_enable => 'undef' }}
+    
+    it { should contain_service('zram').without_enable }
+  end
 end

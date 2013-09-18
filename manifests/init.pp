@@ -15,6 +15,10 @@
 #   Default: running
 #
 # [*service_enable*]
+#   String. Sets the service enable state.
+#   The string 'undef' can be used to not manage the service's
+#   ensure state.
+#   Valid values are 'true', 'false', or 'undef'
 #   Default: true
 #
 # [*service_autorestart*]
@@ -105,6 +109,13 @@ class zram (
     default   => $service_ensure,
   }
 
+  # This gives the option to not define the service 'enable' value.
+  validate_re("${service_enable}", '(true|false|undef)')
+  $service_enable_real  = $service_enable ? {
+    'undef'   => undef,
+    default   => $service_enable,
+  }
+
   $service_autorestart_real = $service_autorestart ? {
     true  => File[$config_path],
     false => undef,
@@ -168,7 +179,7 @@ class zram (
 
   service { 'zram':
     ensure      => $service_ensure_real,
-    enable      => $service_enable,
+    enable      => $service_enable_real,
     name        => $service_name,
     hasstatus   => true,
     hasrestart  => true,

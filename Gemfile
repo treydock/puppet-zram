@@ -5,7 +5,7 @@ group :development, :test do
   gem 'puppetlabs_spec_helper', :require => false
   gem 'puppet-lint', '~> 0.3.2'
   gem 'travis-lint'
-  gem 'rspec-system-puppet', '~>2.0.0'
+  gem 'rspec-system-puppet', '~>2.0'
   #  gem 'rspec-system-serverspec', '~>1.0'
   # Needed to use latest serverspec gem
   # PR submitted: https://github.com/puppetlabs/rspec-system-serverspec/pull/3
